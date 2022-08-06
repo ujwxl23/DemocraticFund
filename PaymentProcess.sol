@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.8;
-contract FUNDvote{
+contract PaymentProcess{
     mapping(address=>uint)public contributors;
     address public manager;
     uint public minContribution;
@@ -28,6 +28,13 @@ contract FUNDvote{
 
     function getTotalBalance() public view returns (uint){
         return address(this).balance;
+    }
+
+    function refund() public{
+        require(block.timestamp>deadline && raisedAmt<targetprice, "you are not eligible for refund");
+        require(contributors[msg.sender]>0);
+        address payable user= payable (msg.sender);
+        user.transfer(contributors[msg.sender]);
     }
 
 }
