@@ -7,43 +7,55 @@ contract PaymentProcess{
     uint public deadline;
     uint public targetprice;
     uint public raisedAmt;
-    uint public  no0fContributors;
+    uint public  noOfContributors;
+    string public proposal;
+    string public officialName;
 
     struct Request{
         string description;
         address payable recipient;
         uint value;
         bool completed;
-        uint no0fFVoters;
-        uint noOfNVoters;
+        uint noOfFVoters;
         mapping(address=>bool)voters;
     }
     mapping (uint=>Request) public requests;
-    uint public numReq;
+    uint public ReqId;
+
+    enum State {Created, Voting, Ended}
+    State public state;
 
 
-    constructor(uint _targetprice,uint _deadline){
+    constructor(string memory _officialName, uint _targetprice,uint _deadline, string memory _proposal){
+    officialName=_officialName;
     targetprice=_targetprice;
     deadline=block.timestamp+_deadline; // 10sec+3600sec(60*60)
-    minContribution=100 wei;
+    minContribution = _targetprice / 100 ;
     manager=msg.sender;
+    proposal = _proposal;
+    state = State.Created;
     }
-    
-    function fundEth()public payable{
+
+    modifier inState(State _state){
+    require (state == _state);
+    _;
+    }
+
+    function fundEth()public payable inState(State.Created){
     require(block.timestamp<deadline,"Deadline has been passed");
     require(msg.value>=minContribution,"Minimum Contribution is not met");
     if(contributors[msg.sender]==0){
-        no0fContributors ++;
+        noOfContributors ++;
     }
     contributors[msg.sender]+=msg.value;
     raisedAmt+=msg.value;
     }
 
-    function getTotalBalance() public view returns (uint){
+    function getTotalBalance() public view inState(State.Created) returns (uint){
         return address(this).balance;
     }
 
-    function refund() public{
+    function refund() public inState(State.Ended){
         require(block.timestamp>deadline && raisedAmt<targetprice, "you are not eligible for refund");
         require(contributors[msg.sender]>0);
         address payable user= payable (msg.sender);
@@ -56,15 +68,40 @@ contract PaymentProcess{
         _;
     }
 
+    modifier bySenderOnly(address payable recipient) {
+        require(msg.sender != recipient, 'Sender and recipient cannot be the same.');
+        _;
+    }
+
+
     function createRequest(string memory _description, address payable _recipient, uint _value) public byManagerOnly{
-        Request storage newRequest = requests[numReq];
-        numReq ++;
+        Request storage newRequest = requests[ReqId];
+        ReqId++;
         newRequest.description=_description;
         newRequest.recipient=_recipient;
         newRequest.value=_value;
         newRequest.completed=false;
-        newRequest.no0fFVoters=0;
-        newRequest.noOfNVoters=0;
+        newRequest.noOfFVoters=0;
     }
+
+    function voteRequest(uint _requestId)public{                            
+        require(contributors[msg.sender]>0,"You must be contributor");
+        Request storage thisRequest=requests[_requestId];
+        require(thisRequest.voters[msg.sender]==false,"You have already voted");
+        thisRequest.voters[msg.sender]=true;
+        thisRequest.noOfFVoters++;
+    }
+
+    function makePayment(uint _requestId)public byManagerOnly{
+    require(raisedAmt>=targetprice);
+    Request storage thisRequest=requests[_requestId];
+    require(thisRequest.completed==false,"The request has been completed");
+    require(thisRequest.noOfFVoters>=((noOfContributors*3)/4));
+    thisRequest.recipient.transfer(thisRequest.value);
+    thisRequest.completed=true;
+    }
+
+    function voteCalculator() private view {}
+
 
 }
