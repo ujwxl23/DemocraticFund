@@ -7,8 +7,12 @@ Blockchain: Blockchain is a shared, immutable ledger that facilitates the proc
 
 Blockchain is ideal for delivering that information because it provides immediate, shared and completely transparent information stored on an immutable ledger that can be accessed only by permissioned network members. A blockchain network can track orders, payments, accounts, production and much more. And because members share a single view of the truth, you can see all details of a transaction end to end, giving you greater confidence, as well as new efficiencies and opportunities.
 
+USER AND CORE NEEDS
+
 People who are finding exciting and unique projects/startup/donations to invest or donate their money.
 
 People who are trying to find funds for their project even accumulate donation for their needs.
 
-We have divided our e-voting system in 3 rounds. We have found a new approach instead of the traditional 50-50% yes/no path. We provide yes=>75%, no=<50% and debatable in 50% to 75%.Thus, powering each induvidual with a strong share in the decision making process and not being infuence by the major shareholders.
+TECHNOLOGY USED
+
+We have divided our e-voting system in 3 rounds. We have found a new approach instead of the traditional 50-50% yes/no path. We provide yes=>75%, no=<50% and debatable in 50% to 75%.Thus, powering each induvidual with a strong share in the decision making process and not being influenced by the major shareholders.
