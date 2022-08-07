@@ -1,28 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <title>DemocraticFund</title>
-</head>
-<body>
-    <nav>
-        <input type="checkbox" id="check">
-        <label for="check" class="checkbtn">
-            <i class="fas fa-bars"></i>
-        </label>
-        <label class="logo">DemocraticFund</label>
-        <ul>
-            <li><a class="active" href="#">Home</a></li>
-            <li><a href="#">Group Discussion</a></li>
-            <li><a href="">Login</a></li>
-            <li><a href="">Sign Up</a></li>
-            <li></li>
-        </ul>
-    </nav>
-
+<html>
+  
+<body bgcolor="lightblue">
+    <center>
+    <table border="1" cellspacing="5" bgcolor="white">
+        <caption><b>Enter Funding Detains</b></caption>
+        <tr>
+            <th rowspan="2"> Funder Address</th>
+            <th colspan="4">Funding</th>
+  
+        </tr>
+        <tr>
+            <th>Fund</th>
+            <th>Campaign Number</th>
+            <th>Campaign Name</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><input type="text" id="aname"></td>
+            <td><input type="text" id="am"></td>
+            <td><input type="text" id="aj"></td>
+            <td><input type="text" id="ad"></td>
+            <td><input type="text" id="an"></td>
+        </tr>
+        <tr>
+            <th colspan="5" height="30">
+            <input type="submit" value="Add To Table" onclick="Sub()"></th>
+        </tr>    
+    </table>
+    <br>
+    <table border="1" cellspacing="5" bgcolor="white" 
+           height="100" width="500" cellpadding="5" id="TableScore">
+        <caption><b>Preview</b></caption>
+        <tr>
+            <th width="180">Official Name</th>
+            <th>Target Price</th>
+            <th>Address</th>
+            <th>Reason</th>
+        </tr>
+          
+    </table>
+    </center>
+    <script type="text/javascript">
+        function Sub(){
+            var n, k, r, e, v, sum, avg;
+            n=(document.getElementById('aname').value);
+            target=(document.getElementById('am').value);
+            deadline=(document.getElementById('aj').value);
+            proposal=(document.getElementById('ad').value);
+            cs=(document.getElementById('an').value);
+            // Calculating Total
+            // sum=k+r+e+v;
+            // avg=sum/4;
+            // Display on Student Data
+            var newTable = document.getElementById('TableScore');
+            var row = newTable.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(0);
+            var cell3 = row.insertCell(0);
+            var cell4 = row.insertCell(0);
+  
+            cell4.innerHTML= n;
+            cell3.innerHTML= target;
+            cell2.innerHTML = deadline;
+            cell1.innerHTML = proposal; 
+  
+            // if(avg>=70){
+            //     cell1.innerHTML="<font color=green>Pass</font>";
+            // }else{
+            //     cell1.innerHTML="<font color=red>Fail</font>";
+            // }
+        }
+    </script>
 </body>
 </html>
