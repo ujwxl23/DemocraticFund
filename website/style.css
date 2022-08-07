@@ -134,7 +134,7 @@ a.active,a.hover{
 }
 
 .card a{
-    background-color: black;
+    /* background-color: black; */
     color: azure;
     padding: 15px 20px;
     display: block;
