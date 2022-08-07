@@ -15,4 +15,4 @@ People who are trying to find funds for their project even accumulate donation f
 
 TECHNOLOGY USED
 
-We have divided our e-voting system in 3 rounds. We have found a new approach instead of the traditional 50-50% yes/no path. We provide yes=>75%, no=<50% and debatable in 50% to 75%.Thus, powering each induvidual with a strong share in the decision making process and not being influenced by the major shareholders.
+We have constructed our e-voting system in "Cumilative Voting" method . We have found a new approach instead of the traditional 50-50% yes/no path. We provide each voter or shareholder with a VOTE POWER depending upon the funding they have provided in the campaign .Thus, powering each induvidual with a strong share in the decision making process and not being influenced by the major shareholders.
