@@ -1,107 +1,79 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.8;
-contract PaymentProcess{
-    mapping(address=>uint)public contributors;
-    address public manager;
-    uint public minContribution;
-    uint public deadline;
-    uint public targetprice;
-    uint public raisedAmt;
-    uint public  noOfContributors;
-    string public proposal;
-    string public officialName;
+//SPDX-License-Identifier: UNLICENSED
+pragma solidity >=0.5.0 < 0.9.0;
 
+contract CrowdFunding{
+    mapping(address=>uint) public contributors; //contributors[msg.sender]=100
+    address public manager; 
+    uint public minimumContribution;
+    uint public deadline;
+    uint public target;
+    uint public raisedAmount;
+    uint public noOfContributors;
+    
     struct Request{
         string description;
         address payable recipient;
         uint value;
         bool completed;
-        uint noOfFVoters;
-        mapping(address=>bool)voters;
+        uint noOfVoters;
+        mapping(address=>bool) voters;
     }
-    mapping (uint=>Request) public requests;
-    uint public ReqId;
-
-    enum State {Created, Voting, Ended}
-    State public state;
-
-
-    constructor(string memory _officialName, uint _targetprice,uint _deadline, string memory _proposal){
-    officialName=_officialName;
-    targetprice=_targetprice;
-    deadline=block.timestamp+_deadline; // 10sec+3600sec(60*60)
-    minContribution = _targetprice / 100 ;
-    manager=msg.sender;
-    proposal = _proposal;
-    state = State.Created;
+    mapping(uint=>Request) public requests;
+    uint public numRequests;
+    constructor(uint _target,uint _deadline){
+        target=_target;
+        deadline=block.timestamp+_deadline; //10sec + 3600sec (60*60)
+        minimumContribution=100 wei;
+        manager=msg.sender;
     }
-
-    modifier inState(State _state){
-    require (state == _state);
-    _;
+    
+    function sendEth() public payable{
+        require(block.timestamp < deadline,"Deadline has passed");
+        require(msg.value >=minimumContribution,"Minimum Contribution is not met");
+        
+        if(contributors[msg.sender]==0){
+            noOfContributors++;
+        }
+        contributors[msg.sender]+=msg.value;
+        raisedAmount+=msg.value;
     }
-
-    function fundEth()public payable inState(State.Created){
-    require(block.timestamp<deadline,"Deadline has been passed");
-    require(msg.value>=minContribution,"Minimum Contribution is not met");
-    if(contributors[msg.sender]==0){
-        noOfContributors ++;
-    }
-    contributors[msg.sender]+=msg.value;
-    raisedAmt+=msg.value;
-    }
-
-    function getTotalBalance() public view inState(State.Created) returns (uint){
+    function getContractBalance() public view returns(uint){
         return address(this).balance;
     }
-
-    function refund() public inState(State.Ended){
-        require(block.timestamp>deadline && raisedAmt<targetprice, "you are not eligible for refund");
+    function refund() public{
+        require(block.timestamp>deadline && raisedAmount<target,"You are not eligible for refund");
         require(contributors[msg.sender]>0);
-        address payable user= payable (msg.sender);
+        address payable user=payable(msg.sender);
         user.transfer(contributors[msg.sender]);
         contributors[msg.sender]=0;
+        
     }
-
-    modifier byManagerOnly(){
-        require(msg.sender==manager,"Manager function only");
+    modifier onlyManger(){
+        require(msg.sender==manager,"Only manager can calll this function");
         _;
     }
-
-    modifier bySenderOnly(address payable recipient) {
-        require(msg.sender != recipient, 'Sender and recipient cannot be the same.');
-        _;
-    }
-
-
-    function createRequest(string memory _description, address payable _recipient, uint _value) public byManagerOnly{
-        Request storage newRequest = requests[ReqId];
-        ReqId++;
+    function createRequests(string memory _description,address payable _recipient,uint _value) public onlyManger{
+        Request storage newRequest = requests[numRequests];
+        numRequests++;
         newRequest.description=_description;
         newRequest.recipient=_recipient;
         newRequest.value=_value;
         newRequest.completed=false;
-        newRequest.noOfFVoters=0;
+        newRequest.noOfVoters=0;
     }
-
-    function voteRequest(uint _requestId)public{                            
-        require(contributors[msg.sender]>0,"You must be contributor");
-        Request storage thisRequest=requests[_requestId];
+    function voteRequest(uint _requestNo) public{
+        require(contributors[msg.sender]>0,"YOu must be contributor");
+        Request storage thisRequest=requests[_requestNo];
         require(thisRequest.voters[msg.sender]==false,"You have already voted");
         thisRequest.voters[msg.sender]=true;
-        thisRequest.noOfFVoters++;
+        thisRequest.noOfVoters++;
     }
-
-    function makePayment(uint _requestId)public byManagerOnly{
-    require(raisedAmt>=targetprice);
-    Request storage thisRequest=requests[_requestId];
-    require(thisRequest.completed==false,"The request has been completed");
-    require(thisRequest.noOfFVoters>=((noOfContributors*3)/4));
-    thisRequest.recipient.transfer(thisRequest.value);
-    thisRequest.completed=true;
+    function makePayment(uint _requestNo) public onlyManger{
+        require(raisedAmount>=target);
+        Request storage thisRequest=requests[_requestNo];
+        require(thisRequest.completed==false,"The request has been completed");
+        require(thisRequest.noOfVoters > noOfContributors/2,"Majority does not support");
+        thisRequest.recipient.transfer(thisRequest.value);
+        thisRequest.completed=true;
     }
-
-    function voteCalculator() private view {}
-
-
 }
